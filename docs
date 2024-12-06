@@ -1,0 +1,21 @@
+# Web Server Implementation using C
+
+## Sockets
+
+### What is a socket?
+
+It seems like a communication channel between 2 computers and transfers data between them.
+
+In C language, if I want to create a socket then I need `socket`.
+
+```c
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+
+int main() {
+        int fd = socket(AF_INET, SOCK_STREAM, 0);
+        printf("fd=%d\n", fd);
+        return 0;
+}
+```
