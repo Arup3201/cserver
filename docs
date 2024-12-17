@@ -1,21 +1,18 @@
 # Web Server Implementation using C
 
-## Sockets
+What are the things I need?
+1. Build a socket for server
+2. Connect to clients
+3. Send HTTP response
 
-### What is a socket?
+## Build a socket server
 
-It seems like a communication channel between 2 computers and transfers data between them.
+To build a socket server, I need `sys/socket.h` library.
 
-In C language, if I want to create a socket then I need `socket`.
+I need the `socket` function to create the socket server.
 
-```c
-#include<stdio.h>
-#include<sys/types.h>
-#include<sys/socket.h>
+## Connect to clients
 
-int main() {
-        int fd = socket(AF_INET, SOCK_STREAM, 0);
-        printf("fd=%d\n", fd);
-        return 0;
-}
-```
+
+## Send HTTP response
+
