@@ -27,5 +27,11 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
+	// Recv from server (BUG)
+	char *message = "";
+	ssize_t nbytes = recv(sock_fd, message, sizeof(message), 0);
+	printf("Server: %s\n", message);
+	printf("%ld bytes received from server.", nbytes);
+
 	return 0;
 }

@@ -43,6 +43,10 @@ int main(){
 		perror("accept");
 		exit(EXIT_FAILURE);
 	}
+	
+	// Send a message from server (BUG)
+	char *message = "Hello from server";
+	send(conn_fd, message, sizeof(message), 0);
 
 	return 0; 
 }
