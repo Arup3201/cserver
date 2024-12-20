@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 #include<sys/types.h>
 #include<sys/socket.h>
@@ -26,12 +27,14 @@ int main() {
 		perror("connect");
 		exit(EXIT_FAILURE);
 	}
+	printf("Client connected with server\n");
 
-	// Recv from server (BUG)
-	char *message = "";
-	ssize_t nbytes = recv(sock_fd, message, sizeof(message), 0);
-	printf("Server: %s\n", message);
-	printf("%ld bytes received from server.", nbytes);
+	size_t len = 1024;
+	char buffer[len];
+	memset(buffer, '\0', len);
+	ssize_t nbytes = recv(sock_fd, buffer, len, 0);
+	printf("Server: %s\n", buffer);
+	printf("%ld bytes received from server.\n", nbytes);
 
 	return 0;
 }
