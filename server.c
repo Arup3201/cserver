@@ -9,6 +9,8 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 
+#include "server.h"
+
 int send_http_response(void*);
 
 int main(int argc, char* argv[]){
