@@ -1,6 +1,9 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include<regex.h>
+#include<string.h>
+
 typedef struct {
 	char method[10]; // GET POST DELETE PUT PATCH OPTIONS HEAD CONNECT TRACE
 	char *request_target;
@@ -34,13 +37,28 @@ typedef struct {
 } ResponseHeader;
 
 typedef struct {
-	RequestLine start_line;
-	RequestHeader header;
+	RequestLine *start_line;
+	RequestHeader *header;
 } HttpRequest;
 
 typedef struct {
-	StatusLine start_line;
-	ResponseHeader header;
+	StatusLine *start_line;
+	ResponseHeader *header;
 } HttpResponse;
+
+// function to get http request structure from request string
+HttpRequest* get_http_request(char *request_string) {
+	// start-line: <method> <request-target> <protocol>
+	HttpRequest* request = (HttpRequest*)malloc(sizeof(HttpRequest));
+	
+	int ws=0, we=0; // word start & word end(exclusive)
+	while(request_string[we]!=' ') we++; // The first word length = we-ws, in the request
+	request->start_line = (RequestLine*)malloc(sizeof(RequestLine));
+	strncpy(request->start_line->method, request_string, we-ws);
+	request->start_line->method[we-ws] = '\0';
+
+	return request;	
+}
+
 
 #endif

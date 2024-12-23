@@ -2,16 +2,15 @@
 #include<stdlib.h>
 #include<errno.h>
 #include<string.h>
-#include<threads.h>
+#include<unistd.h>
 
 #include<sys/socket.h>
 #include<sys/types.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
-
 #include "server.h"
 
-int send_http_response(void*);
+void send_http_response(int*);
 
 int main(int argc, char* argv[]){
 	if(argc < 3) {
@@ -63,16 +62,12 @@ int main(int argc, char* argv[]){
 		}
 		printf("Server accepted a client\n");	
 	
-
-		thrd_t p_thread;
-		thrd_create(&p_thread, send_http_response, &conn_fd);
-		thrd_detach(p_thread);
+		send_http_response(&conn_fd);
 	}
 	return 0; 
 }
 
-int send_http_response(void* fd) {
-	int *conn_fd = (int*)fd;
+void send_http_response(int* fd) {
 	size_t buffer_len = 2048;
 	char http_request[buffer_len];
 	char http_response[buffer_len];
@@ -81,16 +76,17 @@ int send_http_response(void* fd) {
 	memset(http_response, '\0', buffer_len);
 	memset(http_request, '\0', buffer_len);
 
-	ssize_t nbytes = recv(*conn_fd, http_request, buffer_len, 0);
+	ssize_t nbytes = recv(*fd, http_request, buffer_len, 0);
+	HttpRequest* req = get_http_request(http_request);
+	printf("method: %s\n", req->start_line->method);
 	// Send response to browser
 	if(nbytes > 0) {
-		strcpy(http_response, "HTTP/1.1 200 OK\r\nConnection: close\r\n");
-		strcat(http_response, "\nHello");
+		strcpy(http_response, "HTTP/1.1 200 OK\r\nContent-Type:text/html;charset=utf-8\r\nConnection: close\r\n");
+		strcat(http_response, "Hello");
 		printf("%s\n\n", http_response);
-		send(*conn_fd, http_response, buffer_len, 0);
+		send(*fd, http_response, buffer_len, 0);
 	} else {
 		printf("Client disconnected!\n");
 	}
-
-	return 1;
+	shutdown(*fd, SHUT_RDWR);
 }
