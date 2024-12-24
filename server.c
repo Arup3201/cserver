@@ -1,7 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<errno.h>
-#include<string.h>
 #include<unistd.h>
 
 #include<sys/socket.h>
@@ -78,7 +77,7 @@ void send_http_response(int* fd) {
 
 	ssize_t nbytes = recv(*fd, http_request, buffer_len, 0);
 	HttpRequest* req = get_http_request(http_request);
-	printf("method: %s\n", req->start_line->method);
+	printf("<method>: %s <request-target>: %s <protocol>: %s\n", req->start_line->method, req->start_line->request_target, req->start_line->protocol);
 	// Send response to browser
 	if(nbytes > 0) {
 		strcpy(http_response, "HTTP/1.1 200 OK\r\nContent-Type:text/html;charset=utf-8\r\nConnection: close\r\n");
