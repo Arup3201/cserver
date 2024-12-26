@@ -1,50 +1,10 @@
-#ifndef SERVER_H
-#define SERVER_H
-#define BUFFER_SIZE 1024
-
+#include<stdio.h>
+#include<stdlib.h>
 #include<regex.h>
 #include<string.h>
+#include "http.h"
 
-typedef struct {
-	char *method; // GET POST DELETE PUT PATCH OPTIONS HEAD CONNECT TRACE
-	char *request_target;
-	char *protocol;
-} RequestLine;
-
-typedef struct {
-	char *protocol;
-	int status_code;
-	char *status_text;
-} StatusLine;
-
-typedef struct {
-	char *host;
-	char *user_agent;
-	char *accept;
-	char *content_type;
-	int content_length;
-	char *connection;
-} RequestHeader;
-
-typedef struct {
-	char *access_control_origin;
-	char *connection;
-	char *content_encoding;
-	char *content_type;
-	char *keep_alive;
-	char *server;
-	char *set_cookie;
-} ResponseHeader;
-
-typedef struct {
-	RequestLine *start_line;
-	RequestHeader *header;
-} HttpRequest;
-
-typedef struct {
-	StatusLine *start_line;
-	ResponseHeader *header;
-} HttpResponse;
+#define BUFFER_SIZE 1024
 
 // get start line of http request and response
 void set_http_word(int *word_start, int *word_end, char* str, char* copy_to) {
@@ -166,5 +126,3 @@ HttpRequest* get_http_request(char *request_string) {
 	return request;
 }
 
-
-#endif

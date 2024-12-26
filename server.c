@@ -2,12 +2,13 @@
 #include<stdlib.h>
 #include<errno.h>
 #include<unistd.h>
+#include<string.h>
 
 #include<sys/socket.h>
 #include<sys/types.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
-#include "server.h"
+#include "http/http.h"
 
 void send_http_response(int*);
 
