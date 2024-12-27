@@ -126,3 +126,17 @@ HttpRequest* get_http_request(char *request_string) {
 	return request;
 }
 
+void free_request(HttpRequest* req) {
+	free(req->start_line->method);
+	free(req->start_line->request_target);
+	free(req->start_line->protocol);
+	free(req->start_line);
+
+	free(req->header->host);
+	free(req->header->user_agent);
+	free(req->header->connection);
+	free(req->header->accept);
+	free(req->header->content_type);
+	free(req->header);
+
+}

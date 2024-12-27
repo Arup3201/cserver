@@ -44,5 +44,6 @@ typedef struct {
 
 HttpRequest* get_http_request(char*);
 void print_http_request(HttpRequest*);
+void free_request(HttpRequest*);
 
 #endif

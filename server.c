@@ -89,5 +89,7 @@ void send_http_response(int* fd) {
 	} else {
 		printf("Client disconnected!\n");
 	}
+
+	free_request(req);
 	shutdown(*fd, SHUT_RDWR);
 }
