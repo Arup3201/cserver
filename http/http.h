@@ -5,13 +5,13 @@ typedef struct {
 	char *method; // GET POST DELETE PUT PATCH OPTIONS HEAD CONNECT TRACE
 	char *request_target;
 	char *protocol;
-} RequestLine;
+} http_request_line_t;
 
 typedef struct {
 	char *protocol;
 	int status_code;
 	char *status_text;
-} StatusLine;
+} http_status_line_t;
 
 typedef struct {
 	char *host;
@@ -20,7 +20,7 @@ typedef struct {
 	char *content_type;
 	int content_length;
 	char *connection;
-} RequestHeader;
+} http_request_header_t;
 
 typedef struct {
 	char *access_control_origin;
@@ -30,20 +30,20 @@ typedef struct {
 	char *keep_alive;
 	char *server;
 	char *set_cookie;
-} ResponseHeader;
+} http_response_header_t;
 
 typedef struct {
-	RequestLine *start_line;
-	RequestHeader *header;
-} HttpRequest;
+	http_request_line_t *start_line;
+	http_request_header_t *header;
+} http_request_t;
 
 typedef struct {
-	StatusLine *start_line;
-	ResponseHeader *header;
-} HttpResponse;
+	http_status_line_t *start_line;
+	http_response_header_t *header;
+} http_response_t;
 
-HttpRequest* get_http_request(char*);
-void print_http_request(HttpRequest*);
-void free_request(HttpRequest*);
+http_request_t* get_http_request(char*);
+void print_http_request(http_request_t*);
+void free_request(http_request_t*);
 
 #endif

@@ -77,7 +77,7 @@ void send_http_response(int* fd) {
 	memset(http_request, '\0', buffer_len);
 
 	ssize_t nbytes = recv(*fd, http_request, buffer_len, 0);
-	HttpRequest* req = get_http_request(http_request);
+	http_request_t* req = get_http_request(http_request);
 	print_http_request(req);
 
 	// Send response to browser

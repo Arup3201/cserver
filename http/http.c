@@ -52,7 +52,7 @@ char* get_hv(char* h_name, char* str, size_t *len) {
 	return str+hv_start;
 }
 
-void print_http_request(HttpRequest *req) {
+void print_http_request(http_request_t *req) {
 	printf("=====HTTP Request=====\n");
 	printf("%s %s %s\r\n", req->start_line->method, req->start_line->request_target, req->start_line->protocol);
 	printf("Host: %s\r\n", req->header->host);
@@ -65,11 +65,11 @@ void print_http_request(HttpRequest *req) {
 }
 
 // function to get http request structure from request string
-HttpRequest* get_http_request(char *request_string) {
+http_request_t* get_http_request(char *request_string) {
 	// start-line: <method> <request-target> <protocol> e.g. GET / HTTP/1.1
-	HttpRequest* request = (HttpRequest*)malloc(sizeof(HttpRequest));
-	request->start_line = (RequestLine*)malloc(sizeof(RequestLine));
-	request->header = (RequestHeader*)malloc(sizeof(RequestHeader));
+	http_request_t* request = (http_request_t*)malloc(sizeof(http_request_t));
+	request->start_line = (http_request_line_t*)malloc(sizeof(http_request_line_t));
+	request->header = (http_request_header_t*)malloc(sizeof(http_request_header_t));
 
 	int ws=0, we=0;
 	request->start_line->method = (char*)malloc(10);
@@ -126,7 +126,7 @@ HttpRequest* get_http_request(char *request_string) {
 	return request;
 }
 
-void free_request(HttpRequest* req) {
+void free_request(http_request_t* req) {
 	free(req->start_line->method);
 	free(req->start_line->request_target);
 	free(req->start_line->protocol);
