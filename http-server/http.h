@@ -42,10 +42,11 @@ typedef struct {
 	http_response_header_t *header;
 } http_response_t;
 
+
 // http functions - http_fn_[function name]
-http_request_t* http_fn_set(char*); // set request data from client
+http_request_t* http_fn_set_request(char*); // set request data from client
 void http_fn_print_request(http_request_t*); // print request
-http_response_t* http_fn_send(http_request_t*); // send response to client
+http_response_t* http_fn_send_response(char*); // send response to client based on the requested content
 void http_fn_print_response(http_response_t*); // show response
 void http_fn_free_request(http_request_t*); // free the allocated space of request
 void http_fn_free_response(http_response_t*); // free the allocated space of response 
