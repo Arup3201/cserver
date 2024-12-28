@@ -6,8 +6,8 @@
 
 #define BUFFER_SIZE 1024
 
-// get start line of http request and response
-void set_http_word(int *word_start, int *word_end, char* str, char* copy_to) {
+// set start line values of request and response
+void set_start_line(int *word_start, int *word_end, char* str, char* copy_to) {
 	int ws = *word_start, we = *word_end;
 	ws = we;
 	while((str[we] != ' ') && (str[we] != '\r')) we++;
@@ -23,7 +23,7 @@ void set_http_word(int *word_start, int *word_end, char* str, char* copy_to) {
 }
 
 // get header value for a given header name
-char* get_hv(char* h_name, char* str, size_t *len) {
+char* get_header(char* h_name, char* str, size_t *len) {
 	regex_t reg;
 	size_t nmatch=2;
 	regmatch_t pmatch[nmatch];
@@ -35,12 +35,12 @@ char* get_hv(char* h_name, char* str, size_t *len) {
 		return NULL;
 	}
 
-	// header value starts at - +2 for :<space>
 	size_t hv_start, hv_end;
 
+	// header value starts at - +2 for :<space>
 	hv_start = pmatch[0].rm_so + strlen(h_name) + 2;
 
-	// header value ends at - it is exclusive
+	// header value ends at (it is exclusive)
 	hv_end=hv_start;
 	while(str[hv_end] != '\r') hv_end++;
 
@@ -52,7 +52,7 @@ char* get_hv(char* h_name, char* str, size_t *len) {
 	return str+hv_start;
 }
 
-void print_http_request(http_request_t *req) {
+void http_fn_print_request(http_request_t *req) {
 	printf("=====HTTP Request=====\n");
 	printf("%s %s %s\r\n", req->start_line->method, req->start_line->request_target, req->start_line->protocol);
 	printf("Host: %s\r\n", req->header->host);
@@ -64,8 +64,7 @@ void print_http_request(http_request_t *req) {
 	printf("======================\n\n");
 }
 
-// function to get http request structure from request string
-http_request_t* get_http_request(char *request_string) {
+http_request_t* http_fn_set(char *request_string) {
 	// start-line: <method> <request-target> <protocol> e.g. GET / HTTP/1.1
 	http_request_t* request = (http_request_t*)malloc(sizeof(http_request_t));
 	request->start_line = (http_request_line_t*)malloc(sizeof(http_request_line_t));
@@ -75,9 +74,9 @@ http_request_t* get_http_request(char *request_string) {
 	request->start_line->method = (char*)malloc(10);
 	request->start_line->request_target= (char*)malloc(128);
 	request->start_line->protocol = (char*)malloc(32);
-	set_http_word(&ws, &we, request_string, request->start_line->method);
-	set_http_word(&ws, &we, request_string, request->start_line->request_target);
-	set_http_word(&ws, &we, request_string, request->start_line->protocol);
+	set_start_line(&ws, &we, request_string, request->start_line->method);
+	set_start_line(&ws, &we, request_string, request->start_line->request_target);
+	set_start_line(&ws, &we, request_string, request->start_line->protocol);
 
 	request->header->host = (char*)malloc(128);
 	request->header->user_agent = (char*)malloc(128);
@@ -88,37 +87,37 @@ http_request_t* get_http_request(char *request_string) {
 	size_t hv_len;
 	char* str;
 
-	str = get_hv("Host", request_string, &hv_len);
+	str = get_header("Host", request_string, &hv_len);
 	if(str != NULL) {
 		strncpy(request->header->host, str, hv_len);
 		request->header->host[hv_len] = '\0';	
 	}
-	str = get_hv("User-Agent", request_string, &hv_len);
+	str = get_header("User-Agent", request_string, &hv_len);
 	if(str != NULL) {
 		strncpy(request->header->user_agent, str, hv_len);
 		request->header->user_agent[hv_len] = '\0';
 	}
-	str = get_hv("Accept", request_string, &hv_len);
+	str = get_header("Accept", request_string, &hv_len);
 	if(str != NULL) {
 		strncpy(request->header->accept, str, hv_len);
 		request->header->accept[hv_len] = '\0';
 	}
 
-	str = get_hv("Content-Type", request_string, &hv_len);
+	str = get_header("Content-Type", request_string, &hv_len);
 	if(str != NULL) {
 		strncpy(request->header->content_type, str, hv_len);
 		request->header->content_type[hv_len] = '\0';
 	}
 
 	char* content_length = (char*)malloc(128);
-	str = get_hv("Content-Length", request_string, &hv_len);
+	str = get_header("Content-Length", request_string, &hv_len);
 	if(str != NULL) {
 		strncpy(content_length, str, hv_len);
 		content_length[hv_len] = '\0';
 		request->header->content_length = atoi(content_length);
 	}
 	
-	str = get_hv("Connection", request_string, &hv_len);
+	str = get_header("Connection", request_string, &hv_len);
 	if(str != NULL) {
 		strncpy(request->header->connection, str, hv_len);
 		request->header->connection[hv_len] = '\0';
@@ -126,7 +125,7 @@ http_request_t* get_http_request(char *request_string) {
 	return request;
 }
 
-void free_request(http_request_t* req) {
+void http_fn_free_request(http_request_t* req) {
 	free(req->start_line->method);
 	free(req->start_line->request_target);
 	free(req->start_line->protocol);
@@ -139,4 +138,20 @@ void free_request(http_request_t* req) {
 	free(req->header->content_type);
 	free(req->header);
 
+}
+
+void http_fn_free_response(http_response_t* res) {
+	free(res->start_line->protocol);
+	free(res->start_line->status_code);
+	free(res->start_line->status_text);
+	free(res->start_line);
+
+	free(res->header->access_control_origin);
+	free(res->header->connection);
+	free(res->header->content_encoding);
+	free(res->header->content_type);
+	free(res->header->keep_alive);
+	free(res->header->server);
+	free(res->header->set_cookie);
+	free(res->header);
 }
