@@ -8,7 +8,7 @@
 #include<sys/types.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
-#include "http/http.h"
+#include "http-server/http.h"
 
 void send_http_response(int*);
 
@@ -77,8 +77,8 @@ void send_http_response(int* fd) {
 	memset(http_request, '\0', buffer_len);
 
 	ssize_t nbytes = recv(*fd, http_request, buffer_len, 0);
-	http_request_t* req = get_http_request(http_request);
-	print_http_request(req);
+	http_request_t* req = http_fn_get_request(http_request);
+	http_fn_print_request(req);
 
 	// Send response to browser
 	if(nbytes > 0) {
@@ -90,6 +90,6 @@ void send_http_response(int* fd) {
 		printf("Client disconnected!\n");
 	}
 
-	free_request(req);
+	http_fn_free_request(req);
 	shutdown(*fd, SHUT_RDWR);
 }

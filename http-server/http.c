@@ -64,7 +64,7 @@ void http_fn_print_request(http_request_t *req) {
 	printf("======================\n\n");
 }
 
-http_request_t* http_fn_set_request(char *request_string) {
+http_request_t* http_fn_get_request(char *request_string) {
 	// start-line: <method> <request-target> <protocol> e.g. GET / HTTP/1.1
 	http_request_t* request = (http_request_t*)malloc(sizeof(http_request_t));
 	request->start_line = (http_request_line_t*)malloc(sizeof(http_request_line_t));
@@ -125,20 +125,81 @@ http_request_t* http_fn_set_request(char *request_string) {
 	return request;
 }
 
-void generate_response(http_response_t* res, char* file_content) {
-
+void set_response(http_response_t* res, http_request_t* req, char* fcontent) {
+	
 }
 
-void generate_404_error(http_response_t* res) {
+void set_error_response(http_response_t* res, http_request_t* req) {
+	strcpy(res->start_line->protocol, req->start_line->protocol);
+	res->start_line->status_code = 404;
+	strcpy(res->start_line->status_text, "Not Found");
+	strcpy(res->header->access_control_origin, "*");
+	strcpy(res->header->connection, "close");
+	// strcpy(res->header->content_encoding, "");
+	strcpy(res->header->content_type, "text/html");
+	strcpy(res->header->keep_alive, "close");
+	strcpy(res->header->server, "C server");
+	strcpy(res->header->set_cookie, "");
 
+	strcpy(res->body, "404 Not Found");
 }
 
-http_response_t* http_fn_send_response(http_request_t* req) {
+char* get_response(http_response_t* res) {
+	char* string_response = (char*)malloc(1024);
+	
+	strcpy(string_response, "");
+	strcat(string_response, res->start_line->protocol);
+	strcat(string_response, " ");
+	char status_code[4];
+	sprintf(status_code, "%d", res->start_line->status_code);
+	strcat(string_response, status_code);
+	strcat(string_response, " ");
+	strcat(string_response, res->start_line->status_text);
+	strcat(string_response, "\r\n");
+	
+	strcat(string_response, "Access-Control-Origin: ");
+	strcat(string_response, res->header->access_control_origin);
+	strcat(string_response, "\r\n");
+	
+	strcat(string_response, "Content-Encoding: ");
+	strcat(string_response, res->header->content_encoding); 
+	strcat(string_response, "\r\n");
+
+	strcat(string_response, "Content-Type: ");
+	strcat(string_response, res->header->content_type);
+	strcat(string_response, "\r\n");
+
+	strcat(string_response, "Connection: ");
+	strcat(string_response, res->header->connection);
+	strcat(string_response, "\r\n");
+
+	strcat(string_response, "Keep-Alive: ");
+	strcat(string_response, res->header->keep_alive);
+	strcat(string_response, "\r\n");
+
+	strcat(string_response, "Server: ");
+	strcat(string_response, res->header->server);
+	strcat(string_response, "\r\n");
+
+	strcat(string_response, "Set-Cookie: ");
+	strcat(string_response, res->header->set_cookie);
+	strcat(string_response, "\r\n");
+
+	strcat(string_response, "\r\n");
+
+	strcat(string_response, res->body);	
+
+	return string_response;
+}
+
+char* http_fn_get_response(http_request_t* req) {
 	char* rs = req->start_line->request_target;
 
+	if(strcmp(rs, "/") == 0) strcat(rs, "index.html");
+
 	http_response_t* res = (http_response_t*)malloc(sizeof(http_response_t));
-	res->start_line = (http_response_status_line*)malloc(sizeof(http_response_status_line));
-	res->header = (http_response_header*)malloc(sizeof(http_response_header_t));
+	res->start_line = (http_status_line_t*)malloc(sizeof(http_status_line_t));
+	res->header = (http_response_header_t*)malloc(sizeof(http_response_header_t));
 
 	res->start_line->protocol = (char*)malloc(sizeof(50));
 	res->start_line->status_text = (char*)malloc(sizeof(100));
@@ -151,20 +212,25 @@ http_response_t* http_fn_send_response(http_request_t* req) {
 	res->header->set_cookie = (char*)malloc(sizeof(50));
 
 	FILE* fptr = fopen(rs, "r");
+	char* http_response;
 	if(fptr == NULL) {
-		generate_404_error(res);
-		return res;
+		set_error_response(res, req);
+		http_response = get_response(res);
+		return http_response;
 	}
 
 	char fc;
 	char fcontent[2048]="";
-	while((fc=fgetc())!=EOF) {
-		fcontent += fc;
+	int i=0;
+	while((fc=fgetc(fptr))!=EOF) {
+		fcontent[i] = fc;
+		i++;
 	}
 
-	generate_response(res, fcontent);
+	set_response(res, req, fcontent);
+	http_response = get_response(res);
 	fclose(fptr);
-	return res;
+	return http_response;
 
 }
 
@@ -185,7 +251,6 @@ void http_fn_free_request(http_request_t* req) {
 
 void http_fn_free_response(http_response_t* res) {
 	free(res->start_line->protocol);
-	free(res->start_line->status_code);
 	free(res->start_line->status_text);
 	free(res->start_line);
 

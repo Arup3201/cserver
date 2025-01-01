@@ -40,13 +40,14 @@ typedef struct {
 typedef struct {
 	http_status_line_t *start_line;
 	http_response_header_t *header;
+	char* body;
 } http_response_t;
 
 
 // http functions - http_fn_[function name]
-http_request_t* http_fn_set_request(char*); // set request data from client
+http_request_t* http_fn_get_request(char*); // set request data from client
 void http_fn_print_request(http_request_t*); // print request
-http_response_t* http_fn_send_response(char*); // send response to client based on the requested content
+char* http_fn_get_response(http_request_t*); // send response to client based on the requested content
 void http_fn_print_response(http_response_t*); // show response
 void http_fn_free_request(http_request_t*); // free the allocated space of request
 void http_fn_free_response(http_response_t*); // free the allocated space of response 
