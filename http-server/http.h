@@ -46,8 +46,8 @@ typedef struct {
 
 // http functions - http_fn_[function name]
 http_request_t* http_fn_get_request(char*); // set request data from client
-void http_fn_print_request(http_request_t*); // print request
 char* http_fn_get_response(http_request_t*); // send response to client based on the requested content
+void http_fn_print_request(http_request_t*); // print request
 void http_fn_print_response(http_response_t*); // show response
 void http_fn_free_request(http_request_t*); // free the allocated space of request
 void http_fn_free_response(http_response_t*); // free the allocated space of response 

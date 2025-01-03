@@ -145,7 +145,7 @@ void set_error_response(http_response_t* res, http_request_t* req) {
 }
 
 char* get_response(http_response_t* res) {
-	char* string_response = (char*)malloc(1024);
+	char* string_response = (char*)malloc(2048);
 	
 	strcpy(string_response, "");
 	strcat(string_response, res->start_line->protocol);
@@ -187,7 +187,7 @@ char* get_response(http_response_t* res) {
 
 	strcat(string_response, "\r\n");
 
-	strcat(string_response, res->body);	
+	strcat(string_response, res->body);
 
 	return string_response;
 }
@@ -200,16 +200,18 @@ char* http_fn_get_response(http_request_t* req) {
 	http_response_t* res = (http_response_t*)malloc(sizeof(http_response_t));
 	res->start_line = (http_status_line_t*)malloc(sizeof(http_status_line_t));
 	res->header = (http_response_header_t*)malloc(sizeof(http_response_header_t));
+	res->body = (char*)malloc(1024);
 
-	res->start_line->protocol = (char*)malloc(sizeof(50));
-	res->start_line->status_text = (char*)malloc(sizeof(100));
-	res->header->access_control_origin = (char*)malloc(sizeof(50));
-	res->header->connection = (char*)malloc(sizeof(50));
-	res->header->content_encoding = (char*)malloc(sizeof(50));
-	res->header->content_type = (char*)malloc(sizeof(50));
-	res->header->keep_alive = (char*)malloc(sizeof(50));
-	res->header->server = (char*)malloc(sizeof(50));
-	res->header->set_cookie = (char*)malloc(sizeof(50));
+	res->start_line->protocol = (char*)malloc(50);
+	res->start_line->status_text = (char*)malloc(100);
+	res->header->access_control_origin = (char*)malloc(50);
+	res->header->connection = (char*)malloc(50);
+	res->header->content_encoding = (char*)malloc(50);
+	res->header->content_type = (char*)malloc(50);
+	res->header->keep_alive = (char*)malloc(50);
+	res->header->server = (char*)malloc(50);
+	res->header->set_cookie = (char*)malloc(50);
+	
 
 	FILE* fptr = fopen(rs, "r");
 	char* http_response;

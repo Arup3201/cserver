@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
 void send_http_response(int* fd) {
 	size_t buffer_len = 2048;
 	char http_request[buffer_len];
-	char http_response[buffer_len];
+	char *http_response;
 
 	// Reset the address with null
 	memset(http_response, '\0', buffer_len);
@@ -82,9 +82,7 @@ void send_http_response(int* fd) {
 
 	// Send response to browser
 	if(nbytes > 0) {
-		strcpy(http_response, "HTTP/1.1 200 OK\r\nContent-Type:text/html;charset=utf-8\r\nConnection: close\r\n");
-		strcat(http_response, "Hello");
-		printf("%s\n\n", http_response);
+		http_response = http_fn_get_response(req);
 		send(*fd, http_response, buffer_len, 0);
 	} else {
 		printf("Client disconnected!\n");
