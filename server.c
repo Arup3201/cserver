@@ -72,8 +72,6 @@ void send_http_response(int* fd) {
 	char http_request[buffer_len];
 	char *http_response;
 
-	// Reset the address with null
-	memset(http_response, '\0', buffer_len);
 	memset(http_request, '\0', buffer_len);
 
 	ssize_t nbytes = recv(*fd, http_request, buffer_len, 0);
