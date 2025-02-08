@@ -32,7 +32,7 @@
 *.exe
 *.out
 *.app
-*.i*86
+*.i*.6
 *.x86_64
 *.hex
 
@@ -45,8 +45,8 @@
 # Kernel Module Compile Results
 *.mod*
 *.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+*/*.tmp_versions/
+*/modules.order
+*/Module.symvers
+*/Mkfile.old
+*/dkms.conf
