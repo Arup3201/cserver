@@ -195,47 +195,44 @@ char* get_response(http_response_t* res) {
 char* http_fn_get_response(http_request_t* req) {
 	char* rs = (char*)malloc(2048);
 	strcpy(rs, req->start_line->request_target);
-	// printf("target: %s", rs);
-	// if(strcmp(rs, "/") == 0) strcat(rs, "index.html");
+	if(strcmp(rs, "/") == 0) strcat(rs, "index.html");
 
-	// http_response_t* res = (http_response_t*)malloc(sizeof(http_response_t));
-	// res->start_line = (http_status_line_t*)malloc(sizeof(http_status_line_t));
-	// res->header = (http_response_header_t*)malloc(sizeof(http_response_header_t));
-	// res->body = (char*)malloc(1024);
+	http_response_t* res = (http_response_t*)malloc(sizeof(http_response_t));
+	res->start_line = (http_status_line_t*)malloc(sizeof(http_status_line_t));
+	res->header = (http_response_header_t*)malloc(sizeof(http_response_header_t));
+	res->body = (char*)malloc(1024);
 
-	// res->start_line->protocol = (char*)malloc(50);
-	// res->start_line->status_text = (char*)malloc(100);
-	// res->header->access_control_origin = (char*)malloc(50);
-	// res->header->connection = (char*)malloc(50);
-	// res->header->content_encoding = (char*)malloc(50);
-	// res->header->content_type = (char*)malloc(50);
-	// res->header->keep_alive = (char*)malloc(50);
-	// res->header->server = (char*)malloc(50);
-	// res->header->set_cookie = (char*)malloc(50);
-	// 
+	res->start_line->protocol = (char*)malloc(50);
+	res->start_line->status_text = (char*)malloc(100);
+	res->header->access_control_origin = (char*)malloc(50);
+	res->header->connection = (char*)malloc(50);
+	res->header->content_encoding = (char*)malloc(50);
+	res->header->content_type = (char*)malloc(50);
+	res->header->keep_alive = (char*)malloc(50);
+	res->header->server = (char*)malloc(50);
+	res->header->set_cookie = (char*)malloc(50);
+	
 
-	// FILE* fptr = fopen(rs, "r");
+	FILE* fptr = fopen(rs, "r");
 	char* http_response = (char*)malloc(2048);
-	strcpy(http_response, "400 Not Found\r\n\r\n");
-	// if(fptr == NULL) {
-	// 	set_error_response(res, req);
-	// 	http_response = get_response(res);
-	// 	return http_response;
-	// }
+	if(fptr == NULL) {
+		set_error_response(res, req);
+		http_response = get_response(res);
+		return http_response;
+	}
 
-	// char fc;
-	// char fcontent[2048]="";
-	// int i=0;
-	// while((fc=fgetc(fptr))!=EOF) {
-	// 	fcontent[i] = fc;
-	// 	i++;
-	// }
+	char fc;
+	char fcontent[2048]="";
+	int i=0;
+	while((fc=fgetc(fptr))!=EOF) {
+		fcontent[i] = fc;
+		i++;
+	}
 
-	// set_response(res, req, fcontent);
-	// http_response = get_response(res);
-	// fclose(fptr);
+	set_response(res, req, fcontent);
+	http_response = get_response(res);
+	fclose(fptr);
 	return http_response;
-
 }
 
 void http_fn_free_request(http_request_t* req) {
