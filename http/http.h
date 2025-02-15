@@ -1,6 +1,21 @@
 #ifndef HTTP_H
 #define HTTP_H
 
+
+/**
+ * Messages in HTTP/1.1 are text based and here we are going to use them
+ * Messages in HTTP has 4 parts - start line, headers, empty line and body
+ *
+ * start line for request has - <method> <request-target> <protocol>
+ * start line for response has - <protocol> <status-code> <status-text>
+ *
+ * <request-target>: 
+ * - origin form - GET /EN-US/docs/webs/Messages HTTP/1.1
+ * - absolute form - GET https://developer.mozilla.org/EN-US/docs/webs/Messages HTTP/1.1
+ * - authority form - CONNECT developer.mozilla.org:403 HTTP/1.1
+ * - asterisk form - OPTIONS * HTTP/1.1
+ */
+
 // HTTP methods
 #define HTTP_METHOD_GET "GET"
 #define HTTP_METHOD_HEAD "HEAD"
@@ -41,55 +56,44 @@
 #define HTTP_RESPONSE_TEXT_BAD_GATEWAY "Bad Gateway"
 #define HTTP_RESPONSE_TEXT_SERVICE_UNAVAILABLE "Service Unavailable"
 
-typedef struct {
-	char *method; // GET POST DELETE PUT PATCH OPTIONS HEAD CONNECT TRACE
-	char *request_target;
-	char *protocol;
-} http_request_line_t;
+// HTTP request target types
+enum HTTP_REQUEST_TARGET_TYPE {
+	ORIGIN_FORM, 
+	ABSOLUTE_FORM, 
+	AUTHORITY_FORM, 
+	ASTERISK_FORM
+};
 
-typedef struct {
-	char *protocol;
-	int status_code;
-	char *status_text;
-} http_status_line_t;
+// HTTP Headers
+#define HTTP_HEADER_HOST "Host"
+#define HTTP_HEADER_CONTENT_TYPE "Content-Type"
+#define HTTP_HEADER_CONTENT_LENGTH "Content-Length"
+#define HTTP_HEADER_USER_AGENT "User-Agent"
 
-typedef struct {
-	char *host;
-	char *user_agent;
-	char *accept;
-	char *content_type;
-	int content_length;
-	char *connection;
-} http_request_header_t;
+// HTTP Content Types
+#define HTTP_HEADER_CONTENT_TYPE_JSON "application/json"
+#define HTTP_HEADER_CONTENT_TYPE_HTML "text/html"
+#define HTTP_HEADER_CONTENT_TYPE_CSS "text/css"
+#define HTTP_HEADER_CONTENT_TYPE_JAVASCRIPT "text/javascript"
+#define HTTP_HEADER_CONTENT_TYPE_FORM "application/x-www-form-urlencoded"
 
-typedef struct {
-	char *access_control_origin;
-	char *connection;
-	char *content_encoding;
-	char *content_type;
-	char *keep_alive;
-	char *server;
-	char *set_cookie;
-} http_response_header_t;
+// generate the header
+#define GET_HEADER(header, value) #header ": "  #value "\r\n"
 
-typedef struct {
-	http_request_line_t *start_line;
-	http_request_header_t *header;
-} http_request_t;
+typedef struct http_request {
 
-typedef struct {
-	http_status_line_t *start_line;
-	http_response_header_t *header;
-	char* body;
+} *http_request_t;
+
+typedef struct http_response {
+
 } http_response_t;
 
-
 // http functions - http_fn_[function name]
-http_request_t* http_fn_get_request(char*); // set request data from client
-char* http_fn_get_response(http_request_t*); // send response to client based on the requested content
-void http_fn_print_request(http_request_t*); // print request
-void http_fn_print_response(http_response_t*); // show response
-void http_fn_free_request(http_request_t*); // free the allocated space of request
-void http_fn_free_response(http_response_t*); // free the allocated space of response 
+http_request_t http_fn_get_request(char*); // set request data from client
+char* http_fn_get_response(http_request_t); // send response to client based on the requested content
+void http_fn_print_request(http_request_t); // print request
+void http_fn_print_response(http_response_t); // show response
+void http_fn_free_request(http_request_t); // free the allocated space of request
+void http_fn_free_response(http_response_t); // free the allocated space of response 
 
 #endif
