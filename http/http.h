@@ -81,19 +81,37 @@ enum HTTP_REQUEST_TARGET_TYPE {
 #define GET_HEADER(header, value) #header ": "  #value "\r\n"
 
 typedef struct http_request {
+	// start line
+	char method[16];
+	char request_target[128];
+	char protocol[16];
 
+	// header
+	char host[128];
+	char content_type[128];
+	char user_agent[128];
+	int content_length;
+	
+	// body
+	char body[1024];
 } *http_request_t;
 
 typedef struct http_response {
+	char protocol[16];
+	int status_code;
+	char staus_text[128];
 
+	char host[128];
+	char user_agent[128];
+	char content_type[128];
+	int content_length;
+
+	char body[1024];
 } http_response_t;
 
-// http functions - http_fn_[function name]
-http_request_t http_fn_get_request(char*); // set request data from client
-char* http_fn_get_response(http_request_t); // send response to client based on the requested content
-void http_fn_print_request(http_request_t); // print request
-void http_fn_print_response(http_response_t); // show response
-void http_fn_free_request(http_request_t); // free the allocated space of request
-void http_fn_free_response(http_response_t); // free the allocated space of response 
+http_request_t http_make_request(char[]); // generate HTTP request
+http_response_t http_make_response(http_request_t); // genereate HTTP response
+void http_free_request(http_request_t); // free request memory
+void http_free_response(http_response_t); // free response memory
 
 #endif
