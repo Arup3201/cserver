@@ -109,8 +109,9 @@ typedef struct http_response {
 	char body[1024];
 } http_response_t;
 
-http_request_t http_make_request(char[]); // generate HTTP request
+http_request_t http_make_request(char[], int); // generate HTTP request
 http_response_t http_make_response(http_request_t); // genereate HTTP response
+char* http_get_response_string(http_response_t); // convert the response to string
 void http_free_request(http_request_t); // free request memory
 void http_free_response(http_response_t); // free response memory
 
