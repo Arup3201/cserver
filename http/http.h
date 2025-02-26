@@ -107,7 +107,7 @@ typedef struct http_response {
 	int content_length;
 
 	char body[1024];
-} http_response_t;
+} *http_response_t;
 
 http_request_t http_make_request(char[], int); // generate HTTP request
 http_response_t http_make_response(http_request_t); // genereate HTTP response

@@ -16,7 +16,7 @@
 conn_host_t conn_get_host(char* address, int port) {
 	conn_host_t host = (conn_host_t)malloc(sizeof(struct conn_host));
 
-	host->fd = socket(PF_INET, SOCK_STREAM, 0);
+	host->fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	host->addr.sin_family = AF_INET;
 	host->addr.sin_port = htons(port);
@@ -26,6 +26,7 @@ conn_host_t conn_get_host(char* address, int port) {
 		exit(EXIT_FAILURE);
 	}
 
+	host->length = sizeof(host->addr);
 	if(bind(host->fd, (struct sockaddr*)&host->addr, host->length) < 0) {
 		perror("bind");
 		exit(EXIT_FAILURE);

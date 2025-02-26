@@ -7,7 +7,7 @@
 #include "connection/connection.h"
 
 conn_message_t get_server_response(conn_message_t request) {
-	http_request_t req = http_make_request(request->message);
+	http_request_t req = http_make_request(request->message, request->length);
 	http_response_t res = http_make_response(req);
 	char *res_str = http_get_response_string(res);;
 
