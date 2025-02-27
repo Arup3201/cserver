@@ -43,6 +43,7 @@ void conn_handle_client_request(conn_host_t host, request_handler_t handler) {
 
 	conn_host_t client = (conn_host_t)malloc(sizeof(struct conn_host));
 	conn_message_t request = (conn_message_t)malloc(sizeof(struct conn_message));
+	request->length = CONNECTION_MESSAGE_MAX_LEN;
 	conn_message_t response = (conn_message_t)malloc(sizeof(struct conn_message));
 
 	while(1) {

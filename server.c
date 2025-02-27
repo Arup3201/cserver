@@ -8,8 +8,13 @@
 
 conn_message_t get_server_response(conn_message_t request) {
 	http_request_t req = http_make_request(request->message, request->length);
+	fprintf(stdout, "CLIENT: %s %s %s\n", req->method, req->request_target, req->protocol);
+
 	http_response_t res = http_make_response(req);
-	char *res_str = http_get_response_string(res);;
+	fprintf(stdout, "SERVER: %d %s\n\n", res->status_code, res->status_text);
+
+	char *res_str = malloc(CONNECTION_MESSAGE_MAX_LEN);
+	http_get_response_string(res, res_str, CONNECTION_MESSAGE_MAX_LEN);
 
 	static struct conn_message conn_res;
 	strcpy(conn_res.message, res_str);
