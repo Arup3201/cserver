@@ -1,5 +1,4 @@
 #include "connection.h"
-#include <sys/socket.h>
 
 #ifndef _STDIO_H
 #include<stdio.h>
@@ -11,6 +10,10 @@
 
 #ifndef _ARPA_INET_H
 #include<arpa/inet.h>
+#endif
+
+#ifndef _STRING_H
+#include<string.h>
 #endif
 
 conn_host_t conn_get_host(char* address, int port) {
@@ -41,6 +44,7 @@ void conn_handle_client_request(conn_host_t host, request_handler_t handler) {
 		exit(EXIT_FAILURE);
 	}
 
+
 	conn_host_t client = (conn_host_t)malloc(sizeof(struct conn_host));
 	conn_message_t request = (conn_message_t)malloc(sizeof(struct conn_message));
 	request->length = CONNECTION_MESSAGE_MAX_LEN;
@@ -55,8 +59,8 @@ void conn_handle_client_request(conn_host_t host, request_handler_t handler) {
 
 		printf("Server accepted a client\n");
 
+
 		ssize_t nbytes = recv(client->fd, request->message, request->length, 0);
-		fprintf(stdout, "Accpepted bytes %lu\n", nbytes);
 		if(nbytes > 0) {
 			response = (*handler)(request);
 			send(client->fd, response->message, response->length, 0);
@@ -65,5 +69,13 @@ void conn_handle_client_request(conn_host_t host, request_handler_t handler) {
 		}
 
 		shutdown(client->fd, SHUT_RDWR);
+		memset(request->message, '\0', CONNECTION_MESSAGE_MAX_LEN);
+		request->length = 0;
+		memset(response->message, '\0', CONNECTION_MESSAGE_MAX_LEN);
+		response->length = 0;
 	}
+	free(client);
+	free(request);
+	free(response);
+
 }

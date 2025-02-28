@@ -65,10 +65,9 @@ enum HTTP_REQUEST_TARGET_TYPE {
 };
 
 // HTTP Headers
-#define HTTP_HEADER_HOST "Host"
 #define HTTP_HEADER_CONTENT_TYPE "Content-Type"
 #define HTTP_HEADER_CONTENT_LENGTH "Content-Length"
-#define HTTP_HEADER_USER_AGENT "User-Agent"
+#define HTTP_HEADER_CONNECTION "Connection"
 
 // HTTP Content Types
 #define HTTP_HEADER_CONTENT_TYPE_JSON "application/json"
@@ -77,8 +76,7 @@ enum HTTP_REQUEST_TARGET_TYPE {
 #define HTTP_HEADER_CONTENT_TYPE_JAVASCRIPT "text/javascript"
 #define HTTP_HEADER_CONTENT_TYPE_FORM "application/x-www-form-urlencoded"
 
-// generate the header
-#define GET_HEADER(header, value) #header ": "  #value "\r\n"
+#define HTTP_MAX_BODY_LENGTH 1024
 
 typedef struct http_request {
 	// start line
@@ -93,7 +91,7 @@ typedef struct http_request {
 	int content_length;
 	
 	// body
-	char body[1024];
+	char body[HTTP_MAX_BODY_LENGTH];
 } *http_request_t;
 
 typedef struct http_response {
@@ -106,7 +104,7 @@ typedef struct http_response {
 	char content_type[128];
 	int content_length;
 
-	char body[1024];
+	char body[HTTP_MAX_BODY_LENGTH];
 } *http_response_t;
 
 http_request_t http_make_request(char[], int); // generate HTTP request

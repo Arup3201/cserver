@@ -20,6 +20,7 @@ conn_message_t get_server_response(conn_message_t request) {
 	strcpy(conn_res.message, res_str);
 	conn_res.length = strlen(res_str);
 
+	free(res_str);
 	return &conn_res;
 }
 
@@ -34,7 +35,7 @@ int main(int argc, char* argv[]){
 	
 	conn_host_t server = conn_get_host(address, port);
 	conn_handle_client_request(server, get_server_response);
-
+	free(server);
 	return 0; 
 }
 
