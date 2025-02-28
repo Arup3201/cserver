@@ -1,6 +1,5 @@
 #include "http.h"
 
-
 #ifndef	_STDLIB_H
 #include<stdlib.h>
 #endif
@@ -31,7 +30,6 @@ http_request_t http_make_request(char *req, int req_length) {
 	int protocol_str_length = line_end - second_space - 1;
 	strncpy(hreq->protocol, second_space+1, protocol_str_length);
 
-	fprintf(stdout, "%s %s %s\n", hreq->method, hreq->request_target, hreq->protocol);
 
 	return hreq;
 }
@@ -39,14 +37,16 @@ http_request_t http_make_request(char *req, int req_length) {
 http_response_t http_make_response(http_request_t req) {
 	http_response_t hres = (http_response_t)malloc(sizeof(struct http_response));
 
+	strcpy(hres->protocol, HTTP_PROTOCOL_VERSION);
+	hres->status_code = HTTP_RESPONSE_CODE_OK;
+	strcpy(hres->status_text, HTTP_RESPONSE_TEXT_OK);
+	strcpy(hres->content_type, HTTP_HEADER_CONTENT_TYPE_HTML);
+	sprintf(hres->body, "Hi Client!!");
 	return hres;
 }
 
-char* http_get_response_string(http_response_t res) {
-	const char *message = "Hello from Arch Linux";
-	char* res_string = "HTTP1.1 200\r\n";
-	sprintf(res_string, "%s\r\nContent-Type: text/html", res_string);
-	sprintf(res_string, "%s\r\nContent-Length: %zd", res_string, strlen(message));
-	sprintf(res_string, "%s\r\n\r\n%s", res_string, message);
-	return res_string;
+void http_get_response_string(http_response_t res, char* buf, int length) {
+	sprintf(buf, "%s %d %s\r\n", res->protocol, res->status_code, res->status_text);
+	sprintf(buf, "%s%s\r\n%d\r\n\r\n", buf, res->content_type, res->content_length);
+	sprintf(buf, "%s%s", buf, res->body);
 }

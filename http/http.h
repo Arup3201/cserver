@@ -99,7 +99,7 @@ typedef struct http_request {
 typedef struct http_response {
 	char protocol[16];
 	int status_code;
-	char staus_text[128];
+	char status_text[128];
 
 	char host[128];
 	char user_agent[128];
@@ -111,7 +111,7 @@ typedef struct http_response {
 
 http_request_t http_make_request(char[], int); // generate HTTP request
 http_response_t http_make_response(http_request_t); // genereate HTTP response
-char* http_get_response_string(http_response_t); // convert the response to string
+void http_get_response_string(http_response_t, char*, int); // convert the response to string
 void http_free_request(http_request_t); // free request memory
 void http_free_response(http_response_t); // free response memory
 
