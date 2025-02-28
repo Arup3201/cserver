@@ -55,6 +55,7 @@ void conn_handle_client_request(conn_host_t host, request_handler_t handler) {
 		printf("Server accepted a client\n");
 
 		ssize_t nbytes = recv(client->fd, request->message, request->length, 0);
+		fprintf(stdout, "Accpepted bytes %lu\n", nbytes);
 		if(nbytes > 0) {
 			response = (*handler)(request);
 			send(client->fd, response->message, response->length, 0);

@@ -43,7 +43,10 @@ http_response_t http_make_response(http_request_t req) {
 }
 
 char* http_get_response_string(http_response_t res) {
-	char* res_string;
-
+	const char *message = "Hello from Arch Linux";
+	char* res_string = "HTTP1.1 200\r\n";
+	sprintf(res_string, "%s\r\nContent-Type: text/html", res_string);
+	sprintf(res_string, "%s\r\nContent-Length: %zd", res_string, strlen(message));
+	sprintf(res_string, "%s\r\n\r\n%s", res_string, message);
 	return res_string;
 }
