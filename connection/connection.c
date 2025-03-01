@@ -16,6 +16,10 @@
 #include<string.h>
 #endif
 
+#ifndef _UNISTD_H
+#include<unistd.h>
+#endif
+
 conn_host_t conn_get_host(char* address, int port) {
 	conn_host_t host = (conn_host_t)malloc(sizeof(struct conn_host));
 
@@ -29,6 +33,13 @@ conn_host_t conn_get_host(char* address, int port) {
 		exit(EXIT_FAILURE);
 	}
 
+	// this host can be attached to an address which is already in use
+	// FOR TESTING
+	if(setsockopt(host->fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) > 0) {
+		perror("setsockopt");
+		exit(EXIT_FAILURE);
+	}
+
 	host->length = sizeof(host->addr);
 	if(bind(host->fd, (struct sockaddr*)&host->addr, host->length) < 0) {
 		perror("bind");
@@ -39,7 +50,7 @@ conn_host_t conn_get_host(char* address, int port) {
 }
 
 void conn_handle_client_request(conn_host_t host, request_handler_t handler) {
-	if(listen(host->fd, 1) < 0) {
+	if(listen(host->fd, 2) < 0) {
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
@@ -69,13 +80,15 @@ void conn_handle_client_request(conn_host_t host, request_handler_t handler) {
 		}
 
 		shutdown(client->fd, SHUT_RDWR);
+
 		memset(request->message, '\0', CONNECTION_MESSAGE_MAX_LEN);
-		request->length = 0;
 		memset(response->message, '\0', CONNECTION_MESSAGE_MAX_LEN);
 		response->length = 0;
 	}
+	close(host->fd);
+	close(client->fd);
+
 	free(client);
 	free(request);
 	free(response);
-
 }

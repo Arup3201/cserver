@@ -42,11 +42,14 @@ http_request_t http_make_request(char *req, int req_length) {
 http_response_t http_response_error() {
 	http_response_t hres = (http_response_t)malloc(sizeof(struct http_response));
 
+	char *error_message = "Error: resource not found\n";
+
 	hres->status_code = HTTP_RESPONSE_CODE_NOT_FOUND;
 	strcpy(hres->status_text, HTTP_RESPONSE_TEXT_NOT_FOUND);
 	strcpy(hres->content_type, HTTP_HEADER_CONTENT_TYPE_HTML);
-	strcpy(hres->body, "Error: resource not found\n");
-	hres->content_length = strlen(hres->body);
+	hres->content_length = strlen(error_message);
+
+	strcpy(hres->body, error_message);
 
 	return hres;
 }
@@ -61,7 +64,8 @@ http_response_t http_make_response(http_request_t req) {
 		char* filename = "index.html";
 		int fd = open(filename, O_RDONLY, S_IRUSR);
 		if(fd < 0) {
-			fprintf(stderr, "Errro: can't server file index.html\n");
+			fprintf(stderr, "Error: can't serve file index.html\n");
+			free(hres);
 			return http_response_error();
 		}
 		
@@ -70,10 +74,13 @@ http_response_t http_make_response(http_request_t req) {
 		strcpy(hres->content_type, HTTP_HEADER_CONTENT_TYPE_HTML);
 	
 		size_t file_length = lseek(fd, 0, SEEK_END);
-		fprintf(stdout, "INFO: Total file length of index.html - %ld\n", file_length);
+		hres->content_length = file_length - 1;
+		
+		lseek(fd, 0, SEEK_SET);
 		read(fd, hres->body, file_length);
-		hres->content_length = file_length;
 	} else {
+		fprintf(stderr, "Error: can't serve file %s\n", req->request_target);
+		free(hres);
 		return http_response_error();
 	}
 
