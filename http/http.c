@@ -39,9 +39,7 @@ http_request_t http_make_request(char *req, int req_length) {
 	return hreq;
 }
 
-http_response_t http_response_error() {
-	http_response_t hres = (http_response_t)malloc(sizeof(struct http_response));
-
+void http_response_error(http_response_t hres) {
 	char *error_message = "Error: resource not found\n";
 
 	hres->status_code = HTTP_RESPONSE_CODE_NOT_FOUND;
@@ -50,8 +48,41 @@ http_response_t http_response_error() {
 	hres->content_length = strlen(error_message);
 
 	strcpy(hres->body, error_message);
+}
 
-	return hres;
+char* http_get_response_content_type(char *resource) {
+	char *resource_name = strrchr(resource, '/') + 1;
+	char *extension = strrchr(resource_name, '.') + 1;
+	fprintf(stdout, "INFO: Requested content extension - %s\n", extension);
+	if(extension == NULL) {
+		return HTTP_HEADER_CONTENT_TYPE_JSON;
+	}
+	
+	if(strcmp(extension, "css") == 0) {
+		return HTTP_HEADER_CONTENT_TYPE_CSS;
+	}
+
+	if(strcmp(extension, "js") == 0) {
+		return HTTP_HEADER_CONTENT_TYPE_JAVASCRIPT;
+	}
+
+	return HTTP_HEADER_CONTENT_TYPE_HTML;
+}
+
+void http_serve_resource(char *filename, http_response_t hres) {
+		int fd = open(filename, O_RDONLY, S_IRUSR);
+		if(fd < 0) {
+			http_response_error(hres);
+		}
+		
+		hres->status_code = HTTP_RESPONSE_CODE_OK;
+		strcpy(hres->status_text, HTTP_RESPONSE_TEXT_OK);
+
+		size_t file_length = lseek(fd, 0, SEEK_END);
+		hres->content_length = file_length;
+		
+		lseek(fd, 0, SEEK_SET);
+		read(fd, hres->body, file_length);
 }
 
 http_response_t http_make_response(http_request_t req) {
@@ -62,26 +93,17 @@ http_response_t http_make_response(http_request_t req) {
 	// fetching the requested resource
 	if(strcmp(req->request_target, "/") == 0) {
 		char* filename = "index.html";
-		int fd = open(filename, O_RDONLY, S_IRUSR);
-		if(fd < 0) {
-			fprintf(stderr, "Error: can't serve file index.html\n");
-			free(hres);
-			return http_response_error();
-		}
-		
-		hres->status_code = HTTP_RESPONSE_CODE_OK;
-		strcpy(hres->status_text, HTTP_RESPONSE_TEXT_OK);
-		strcpy(hres->content_type, HTTP_HEADER_CONTENT_TYPE_HTML);
-	
-		size_t file_length = lseek(fd, 0, SEEK_END);
-		hres->content_length = file_length - 1;
-		
-		lseek(fd, 0, SEEK_SET);
-		read(fd, hres->body, file_length);
+		http_serve_resource(filename, hres);
 	} else {
-		fprintf(stderr, "Error: can't serve file %s\n", req->request_target);
-		free(hres);
-		return http_response_error();
+		char curr_dir[1024];
+		if(getcwd(curr_dir, sizeof(curr_dir)) == NULL) {
+			fprintf(stderr, "ERROR: failed to get current directory\n");
+			exit(EXIT_FAILURE);
+		}
+		char *filename = strcat(curr_dir, req->request_target);
+	
+		http_serve_resource(filename, hres);
+		strcpy(hres->content_type, http_get_response_content_type(req->request_target));
 	}
 
 	return hres;
