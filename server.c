@@ -19,7 +19,9 @@ conn_message_t get_server_response(conn_message_t request) {
 	static struct conn_message conn_res;
 	strcpy(conn_res.message, res_str);
 	conn_res.length = strlen(res_str);
-
+	
+	free(req);
+	free(res);
 	free(res_str);
 	return &conn_res;
 }

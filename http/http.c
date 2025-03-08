@@ -94,6 +94,7 @@ http_response_t http_make_response(http_request_t req) {
 	if(strcmp(req->request_target, "/") == 0) {
 		char* filename = "index.html";
 		http_serve_resource(filename, hres);
+		strcpy(hres->content_type, HTTP_HEADER_CONTENT_TYPE_HTML);
 	} else {
 		char curr_dir[1024];
 		if(getcwd(curr_dir, sizeof(curr_dir)) == NULL) {
