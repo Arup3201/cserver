@@ -49,7 +49,7 @@ int main(int argc, char* argv[]){
 }
 ```
 
-## To DO
+## TO DO
 
 - Support multiple formats of response - image, application etc.
 - Support dynamic sites where user can submit data and it will save in the database.
